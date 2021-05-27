@@ -13,6 +13,6 @@ for i in distance:
     roots = np.roots(coeffs)
     t = roots[1]
     v = v + 6.8*t
-    rpm.append(v*1000/(60*1.765*9/30*14/23))
+    rpm.append(v*1000*3.6/(60*1.765*9/30*14/23))
 
 print(v*3.6, rpm[-1])
