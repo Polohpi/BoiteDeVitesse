@@ -7,6 +7,7 @@ rapport1 = 0.38
 RPMOptimalReprise = 5550
 RPMMaxPourCoupleOptimal = 6700    #Le couple est maximal lorsqu'il est compris entre RPMOptimalReprise et RPMMaxPourCoupleOptimal
 RPMChangementDeVitesse = 7450
+RPMMaxDerniereVitesse = 1300
 
 ##DONNEES CIRCUIT:
 vitessesReelles1 = [0, 22,30, 34,38,39,42,45,46,47,48,49,51,51,53,54,54,56,57,59,60,62,65,76,81,89,94,96,100,
@@ -15,50 +16,6 @@ vitessesReelles1 = [0, 22,30, 34,38,39,42,45,46,47,48,49,51,51,53,54,54,56,57,59
                     192,192,192,193,194,195,196,196,196,197, 197]   #vitesse point par point
 gear = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,
         4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,6,6,6,6,6]  #Gear correspondante point par point
-
-#FONCTION PRINCIPALE:
-def CreationBoite(vitesse, gear):
-    vitesseGear1 = []
-    vitesseGear2 = []
-    vitesseGear3 = []
-    vitesseGear4 = []
-    vitesseGear5 = []
-    vitesseGear6 = []
-    for i in range(len(gear)):   ##Tri des vitesses en fonction de la gear dans laquelle elles sont atteintes
-        if gear[i] == 1:
-            vitesseGear1.append(vitesse[i])
-        if gear[i] == 2:
-            vitesseGear2.append(vitesse[i])
-        if gear[i] == 3:
-            vitesseGear3.append(vitesse[i])
-        if gear[i] == 4:
-            vitesseGear4.append(vitesse[i])
-        if gear[i] == 5:
-            vitesseGear5.append(vitesse[i])
-        if gear[i] == 6:
-            vitesseGear6.append(vitesse[i])
-
-    ##CHOIX DES RAPPORTS:
-    print("rapport 1:")
-    print(rapport1)
-    rapport2 = choixRapport2Bas(vitesseGear2)
-    print("rapport 2 :")
-    print(rapport2)
-    rapport3 = choixRapport3Bas(vitesseGear3,rapport2)
-    print("rapport 3 :")
-    print(rapport3)
-    rapport4 = choixRapport4Bas(vitesseGear4, rapport3)  ##CHOIX "par le bas" jusqu'a la gear 4: on s'arrange pour obtenir une retombée de rpm a 5550 tr/min au changement de vitesse, ce qui correpond au max du couple dispo et donc à la meilleure reprise.
-    print("rapport 4  :")
-    print(rapport4)
-    rapport6 = ChoixPignonHaut(max(vitessesReelles1), RPMChangementDeVitesse)  ##Choix des autres rapport "par le haut": On prend le rapport max et n s'assure qu'il permette d'atteindre la Vmax avec un taux de rpm satisfaisant, soit autour de 1400 tr/min
-    print("rapport 6 :")
-    print(rapport6)
-    rapport5 = choixRapport5Haut(vitesseGear5)
-    print("rapport 5 :")
-    print(rapport5)
-    #Tracé du graphe RPM = f(Vitesse)
-    rapports = [rapport1,rapport2, rapport3, rapport4, rapport5, rapport6]
-    traceGrapheVitesseRPM(rapports, [RPMChangementDeVitesse] * 6)
 
 #FONCTIONS ANNEXES:
 def ChoixPignonHaut(Vmax, RPMPassageHaut):  #Choix du pignon en fonction d'une vitesse que l'on veut atteinte pour un régime maximal et ainsi exploiter pleinement la gear sans sous ou sur dimensionner
@@ -72,6 +29,7 @@ def traceGrapheVitesseRPM(Rapports, RPMPassageHaut): #Rapports contient les rapp
     VitesseDePassage  = []
     for i in range(len(Rapports)):
         VitesseDePassage.append(RPMPassageHaut[i] * Rapports[i] * Pont * PérimètreRoue * 60/1000)
+        plt.text(VitesseDePassage[i], 7450, '{}'.format(int(VitesseDePassage[i])))
     print(VitesseDePassage)
     X = [0]
     Y = [0]
@@ -152,10 +110,11 @@ def choixRapport6Haut(vitesseGear6):
     r = ChoixPignonHaut(vMax, RPMChangementDeVitesse)
     return r
 
-#CreationBoite(vitessesReelles1, gear)
 
 ##Test boites 7/6/5
 GearMaxDeReprise = 3
+
+##Pour une boite déja définie comme boite 7
 def CreationBoites7(vitesse, gear, GearMaxDeReprise):
     vitesseGear1 = []
     vitesseGear2 = []
@@ -218,11 +177,10 @@ def CreationBoites7(vitesse, gear, GearMaxDeReprise):
     if (nBoite - i == GearMaxDeReprise):
         return rapports
     rapports.insert(GearMaxDeReprise, choixRapport2Haut(vitesseGear2))
-    return rapports
+    return rapports #
+
+##Pour une boite deja définie comme boite 6:
 def CreationBoites6(vitesse, gear, GearMaxDeReprise):
-    GearMaxDeLEssai = max(gear)
-    if(GearMaxDeLEssai > 6):
-        #Si on met une vitesse en plus
     vitesseGear1 = []
     vitesseGear2 = []
     vitesseGear3 = []
@@ -277,4 +235,38 @@ def CreationBoites6(vitesse, gear, GearMaxDeReprise):
         return rapports
     rapports.insert(GearMaxDeReprise, choixRapport2Haut(vitesseGear2))
     return rapports
-print(CreationBoites7(vitessesReelles1,gear,4))
+
+def CreationBoite7Depuis6(vitesse):
+    listeRapports = []
+    rapports = [0.38]
+
+
+    while (abs(rapports[-1] - rapports[-2]) > 0.1):
+
+        rapports = [0.38]
+        rapport7 = ChoixPignonHaut(max(vitesse), RPMMaxDerniereVitesse)
+        print(rapport7)
+        rapports.append(rapport7)
+
+        vMaxPignon1 = 60 * PérimètreRoue * Pont * 7450 * rapports[0]/1000
+        r1 = 1000 * (vMaxPignon1 - erreur)/ (60 * Pont * PérimètreRoue*RPMOptimalReprise)
+        rapports.insert(1, r1)
+        vMaxPignon2 = 60 * PérimètreRoue * Pont * 7450 * rapports[1] /1000
+        rapports.insert(len(rapports) - 1, 1000 * (vMaxPignon2 - erreur) / (60 * Pont * PérimètreRoue * RPMOptimalReprise))
+        vMaxPignon3 = 60 * PérimètreRoue * Pont * 7450 * rapports[2] / 1000
+        rapports.insert(len(rapports) - 1, 1000 * (vMaxPignon3 - erreur) / (60 * Pont * PérimètreRoue * RPMOptimalReprise))
+        vMaxPignon4 = 60 * PérimètreRoue * Pont * 7450 * rapports[3] / (1000)
+        rapports.insert(len(rapports) - 1, 1000 * (vMaxPignon4 - erreur) / (60 * Pont * PérimètreRoue * RPMOptimalReprise))
+        vMaxPignon5 = 60 * PérimètreRoue * Pont * 7450 * rapports[4] / (1000)
+        rapports.insert(len(rapports) - 1, 1000 * (vMaxPignon5 - erreur) / (60 * Pont * PérimètreRoue * RPMOptimalReprise))
+        if(rapports[-1] - rapports[-2] < 0.2):
+            listeRapports.append(rapports)
+
+
+    return listeRapports
+
+#res = CreationBoites6(vitessesReelles1,gear,4)
+#print(res)
+#traceGrapheVitesseRPM(res, [RPMChangementDeVitesse] * 6)
+
+print(CreationBoite7Depuis6(vitessesReelles1))
