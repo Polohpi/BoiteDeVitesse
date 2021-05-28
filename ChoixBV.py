@@ -152,11 +152,11 @@ def choixRapport6Haut(vitesseGear6):
     r = ChoixPignonHaut(vMax, RPMChangementDeVitesse)
     return r
 
-CreationBoite(vitessesReelles1, gear)
+#CreationBoite(vitessesReelles1, gear)
 
 ##Test boites 7/6/5
 GearMaxDeReprise = 3
-def CreationBoites7_6_5(vitesse, gear, GearMaxDeReprise):
+def CreationBoites7(vitesse, gear, GearMaxDeReprise):
     vitesseGear1 = []
     vitesseGear2 = []
     vitesseGear3 = []
@@ -182,17 +182,17 @@ def CreationBoites7_6_5(vitesse, gear, GearMaxDeReprise):
             vitesseGear7.append(vitesse[i])
 
     ##CHOIX DES RAPPORTS DIMENSIONNES 'PAR LE BAS'
-    while(len(rapports) < GearMaxDeReprise ):
-        if (len(rapports) == 1):
-            rapports.append(choixRapport2Bas(vitesseGear2))
-        if (len(rapports) == 2):
-            rapports.append(choixRapport3Bas(vitesseGear3, rapports[1]))
-        if (len(rapports) == 3):
-            rapports.append(choixRapport4Bas(vitesseGear4, rapports[2]))
-        if (len(rapports) == 4):
-            rapports.append(choixRapport5Bas(vitesseGear5, rapports[3]))
-        if (len(rapports) == 5):
-            rapports.append(choixRapport6Bas(vitesseGear6, rapports[4]))
+
+    if (len(rapports) == 1 and len(rapports) < GearMaxDeReprise):
+        rapports.append(choixRapport2Bas(vitesseGear2))
+    if (len(rapports) == 2 and len(rapports) < GearMaxDeReprise):
+        rapports.append(choixRapport3Bas(vitesseGear3, rapports[1]))
+    if (len(rapports) == 3 and len(rapports) < GearMaxDeReprise):
+        rapports.append(choixRapport4Bas(vitesseGear4, rapports[2]))
+    if (len(rapports) == 4 and len(rapports) < GearMaxDeReprise):
+        rapports.append(choixRapport5Bas(vitesseGear5, rapports[3]))
+    if (len(rapports) == 5 and len(rapports) < GearMaxDeReprise):
+        rapports.append(choixRapport6Bas(vitesseGear6, rapports[4]))
 
     #DIMENSIONNEMENT DES RAPPORTS HAUTS: 3 CAS : BOITE 7, 6 ou 5:
     nBoite = 7
@@ -219,5 +219,59 @@ def CreationBoites7_6_5(vitesse, gear, GearMaxDeReprise):
         return rapports
     rapports.insert(GearMaxDeReprise, choixRapport2Haut(vitesseGear2))
     return rapports
+def CreationBoites6(vitesse, gear, GearMaxDeReprise):
+    vitesseGear1 = []
+    vitesseGear2 = []
+    vitesseGear3 = []
+    vitesseGear4 = []
+    vitesseGear5 = []
+    vitesseGear6 = []
+    rapports = [rapport1]
+    for i in range(len(gear)):   ##Tri des vitesses en fonction de la gear dans laquelle elles sont atteintes
+        if gear[i] == 1:
+            vitesseGear1.append(vitesse[i])
+        if gear[i] == 2:
+            vitesseGear2.append(vitesse[i])
+        if gear[i] == 3:
+            vitesseGear3.append(vitesse[i])
+        if gear[i] == 4:
+            vitesseGear4.append(vitesse[i])
+        if gear[i] == 5:
+            vitesseGear5.append(vitesse[i])
+        if gear[i] == 6:
+            vitesseGear6.append(vitesse[i])
 
-print(CreationBoites7_6_5(vitessesReelles1,gear,1))
+
+    ##CHOIX DES RAPPORTS DIMENSIONNES 'PAR LE BAS'
+
+    if (len(rapports) == 1 and len(rapports) < GearMaxDeReprise):
+        rapports.append(choixRapport2Bas(vitesseGear2))
+    if (len(rapports) == 2 and len(rapports) < GearMaxDeReprise):
+        rapports.append(choixRapport3Bas(vitesseGear3, rapports[1]))
+    if (len(rapports) == 3 and len(rapports) < GearMaxDeReprise):
+        rapports.append(choixRapport4Bas(vitesseGear4, rapports[2]))
+    if (len(rapports) == 4 and len(rapports) < GearMaxDeReprise):
+        rapports.append(choixRapport5Bas(vitesseGear5, rapports[3]))
+
+    #DIMENSIONNEMENT DES RAPPORTS HAUTS: BOITE 6:
+    nBoite = 6
+    i = 0
+    rapports.append(ChoixPignonHaut(max(vitesse), RPMChangementDeVitesse))
+    i += 1
+    if (nBoite - i  == GearMaxDeReprise):
+        return rapports
+    rapports.insert(GearMaxDeReprise, choixRapport5Haut(vitesseGear5))
+    i += 1
+    if (nBoite - i == GearMaxDeReprise):
+        return rapports
+    rapports.insert(GearMaxDeReprise, choixRapport4Haut(vitesseGear4))
+    i += 1
+    if (nBoite - i == GearMaxDeReprise):
+        return rapports
+    rapports.insert(GearMaxDeReprise, choixRapport3Haut(vitesseGear3))
+    i += 1
+    if (nBoite - i  == GearMaxDeReprise):
+        return rapports
+    rapports.insert(GearMaxDeReprise, choixRapport2Haut(vitesseGear2))
+    return rapports
+print(CreationBoites7(vitessesReelles1,gear,4))
