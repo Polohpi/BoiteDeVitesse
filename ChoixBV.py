@@ -7,7 +7,7 @@ rapport1 = 0.38
 RPMOptimalReprise = 5550
 RPMMaxPourCoupleOptimal = 6700    #Le couple est maximal lorsqu'il est compris entre RPMOptimalReprise et RPMMaxPourCoupleOptimal
 RPMChangementDeVitesse = 7450
-RPMMaxDerniereVitesse = 1300
+RPMMaxDerniereVitesse = 7300
 
 ##DONNEES CIRCUIT:
 vitessesReelles1 = [0, 22,30, 34,38,39,42,45,46,47,48,49,51,51,53,54,54,56,57,59,60,62,65,76,81,89,94,96,100,
@@ -239,13 +239,12 @@ def CreationBoites6(vitesse, gear, GearMaxDeReprise):
 def CreationBoite7Depuis6(vitesse):
     listeRapports = []
     rapports = [0.38]
-
-
-    while (abs(rapports[-1] - rapports[-2]) > 0.1):
-
+    rapport7 = ChoixPignonHaut(max(vitesse), RPMMaxDerniereVitesse)
+    rapports.append(rapport7)
+    erreur = 0
+    while (rapports[-1] - rapports[-2] > 0.1 or rapports[-1] - rapports[-2] < 0):
         rapports = [0.38]
         rapport7 = ChoixPignonHaut(max(vitesse), RPMMaxDerniereVitesse)
-        print(rapport7)
         rapports.append(rapport7)
 
         vMaxPignon1 = 60 * PérimètreRoue * Pont * 7450 * rapports[0]/1000
@@ -259,9 +258,9 @@ def CreationBoite7Depuis6(vitesse):
         rapports.insert(len(rapports) - 1, 1000 * (vMaxPignon4 - erreur) / (60 * Pont * PérimètreRoue * RPMOptimalReprise))
         vMaxPignon5 = 60 * PérimètreRoue * Pont * 7450 * rapports[4] / (1000)
         rapports.insert(len(rapports) - 1, 1000 * (vMaxPignon5 - erreur) / (60 * Pont * PérimètreRoue * RPMOptimalReprise))
-        if(rapports[-1] - rapports[-2] < 0.2):
+        if(rapports[-1] > rapports[-2]):
             listeRapports.append(rapports)
-
+        erreur += 0.2
 
     return listeRapports
 
