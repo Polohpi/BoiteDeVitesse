@@ -220,6 +220,9 @@ def CreationBoites7(vitesse, gear, GearMaxDeReprise):
     rapports.insert(GearMaxDeReprise, choixRapport2Haut(vitesseGear2))
     return rapports
 def CreationBoites6(vitesse, gear, GearMaxDeReprise):
+    GearMaxDeLEssai = max(gear)
+    if(GearMaxDeLEssai > 6):
+        #Si on met une vitesse en plus
     vitesseGear1 = []
     vitesseGear2 = []
     vitesseGear3 = []
